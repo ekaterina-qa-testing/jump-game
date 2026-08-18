@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    background: #f5efe6;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+}
+
+canvas {
+    background: #ffffff;
+
+    border: 2px solid #333;
+
+    width: 400px;
+    height: 600px;
+}

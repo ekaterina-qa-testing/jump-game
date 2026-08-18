@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Doodle Jump</title>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 15px;
+    }
+
+    .controls button {
+        width: 80px;
+        height: 60px;
+        font-size: 30px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+</style>
+
+</head>
+
+<body>
+
+  <div class="game-container">
+
+    <canvas id="game"></canvas>
+
+    <div class="controls">
+        <button id="leftButton">◀</button>
+        <button id="rightButton">▶</button>
+    </div>
+
+</div>
+
+    <script src="game.js"></script>
+</body>
+</html>
