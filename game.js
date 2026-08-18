@@ -248,19 +248,54 @@ function gameLoop() {
     // Рисуем персонажа
     // --------------------
 
-    ctx.fillStyle = 'black';
+    // Рисуем человечка
 
-    ctx.fillRect(
+const x = player.x;
+const y = player.y + cameraY;
 
-        player.x,
+// Голова
+ctx.beginPath();
+ctx.arc(
+    x + 25,
+    y + 10,
+    10,
+    0,
+    Math.PI * 2
+);
+ctx.fillStyle = 'black';
+ctx.fill();
 
-        player.y + cameraY,
+// Тело
+ctx.beginPath();
+ctx.moveTo(x + 25, y + 20);
+ctx.lineTo(x + 25, y + 38);
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 4;
+ctx.stroke();
 
-        player.width,
+// Левая рука
+ctx.beginPath();
+ctx.moveTo(x + 25, y + 24);
+ctx.lineTo(x + 12, y + 32);
+ctx.stroke();
 
-        player.height
+// Правая рука
+ctx.beginPath();
+ctx.moveTo(x + 25, y + 24);
+ctx.lineTo(x + 38, y + 32);
+ctx.stroke();
 
-    );
+// Левая нога
+ctx.beginPath();
+ctx.moveTo(x + 25, y + 38);
+ctx.lineTo(x + 15, y + 50);
+ctx.stroke();
+
+// Правая нога
+ctx.beginPath();
+ctx.moveTo(x + 25, y + 38);
+ctx.lineTo(x + 35, y + 50);
+ctx.stroke();
 
 
     // --------------------
