@@ -1082,23 +1082,36 @@ if (rightButton) {
 // ====================
 
 canvas.addEventListener(
-    'click',
+    'pointerdown',
     function(event) {
 
         if (!gameOver) {
             return;
         }
 
+        event.preventDefault();
 
         const rect =
             canvas.getBoundingClientRect();
 
+        // Переводим координаты касания
+        // в координаты самого canvas 400×600
+
+        const scaleX =
+            canvas.width / rect.width;
+
+        const scaleY =
+            canvas.height / rect.height;
+
         const x =
-            event.clientX - rect.left;
+            (event.clientX - rect.left) * scaleX;
 
         const y =
-            event.clientY - rect.top;
+            (event.clientY - rect.top) * scaleY;
 
+
+        // Проверяем попадание
+        // в кнопку "ИГРАТЬ СНОВА"
 
         if (
             x >= 100 &&
@@ -1109,6 +1122,7 @@ canvas.addEventListener(
 
             restartGame();
         }
+
     }
 );
 
