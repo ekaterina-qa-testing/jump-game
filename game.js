@@ -51,19 +51,27 @@ canvas.height = 600;
 // RESTART BUTTON
 // ==================================================
 
-let restartButton = document.getElementById('restartButton');
+let restartButton =
+    document.getElementById('restartButton');
 
 if (!restartButton) {
 
-    restartButton = document.createElement('button');
+    restartButton =
+        document.createElement('button');
 
-    restartButton.id = 'restartButton';
-    restartButton.textContent = 'ИГРАТЬ СНОВА';
+    restartButton.id =
+        'restartButton';
 
-    const gameContainer = document.querySelector('.game-container');
+    restartButton.textContent =
+        'ИГРАТЬ СНОВА';
+
+    const gameContainer =
+        document.querySelector('.game-container');
 
     if (gameContainer) {
-        gameContainer.appendChild(restartButton);
+        gameContainer.appendChild(
+            restartButton
+        );
     }
 }
 
@@ -72,31 +80,43 @@ if (restartButton) {
     restartButton.style.display = 'none';
     restartButton.style.position = 'fixed';
     restartButton.style.left = '50%';
-    restartButton.style.transform = 'translateX(-50%)';
+    restartButton.style.transform =
+        'translateX(-50%)';
     restartButton.style.bottom = '95px';
     restartButton.style.width = '200px';
     restartButton.style.height = '60px';
     restartButton.style.zIndex = '2000';
+
     restartButton.style.border = 'none';
     restartButton.style.borderRadius = '15px';
+
     restartButton.style.background = 'white';
     restartButton.style.color = '#333';
+
     restartButton.style.fontSize = '20px';
     restartButton.style.fontWeight = 'bold';
-    restartButton.style.touchAction = 'manipulation';
 
-    restartButton.addEventListener('pointerdown', function (event) {
+    restartButton.style.touchAction =
+        'manipulation';
 
-        event.preventDefault();
-        event.stopPropagation();
+    restartButton.addEventListener(
+        'pointerdown',
+        function (event) {
 
-        restartGame();
-    });
+            event.preventDefault();
+            event.stopPropagation();
 
-    restartButton.addEventListener('contextmenu', function (event) {
+            restartGame();
+        }
+    );
 
-        event.preventDefault();
-    });
+    restartButton.addEventListener(
+        'contextmenu',
+        function (event) {
+
+            event.preventDefault();
+        }
+    );
 }
 
 
@@ -105,11 +125,36 @@ if (restartButton) {
 // ==================================================
 
 const player = {
+
     x: 165,
     y: 100,
+
     width: 55,
     height: 70
 };
+
+
+// ==================================================
+// НАСТРОЙКИ
+// ==================================================
+
+const PLATFORM_GAP = 90;
+
+const FIRST_MONSTER_PLATFORM = 21;
+
+const MONSTER_INTERVAL = 20;
+
+const MONSTER_CHANCE = 0.65;
+
+const ROCKET_INTERVAL = 10;
+
+const ROCKET_PLATFORMS_UP = 20;
+
+const ROCKET_DISPLAY_OFFSET = 3;
+
+const ROCKET_DURATION = 6000;
+
+const ROCKET_SAFE_PLATFORMS = 20;
 
 
 // ==================================================
@@ -117,6 +162,7 @@ const player = {
 // ==================================================
 
 const startPlatforms = [
+
     {
         x: 150,
         y: 500,
@@ -163,9 +209,15 @@ const startPlatforms = [
     }
 ];
 
-let platforms = startPlatforms.map(function (platform) {
-    return { ...platform };
-});
+
+let platforms =
+    startPlatforms.map(function (platform) {
+
+        return {
+            ...platform
+        };
+    });
+
 
 let highestPlatformY = 140;
 
@@ -175,6 +227,7 @@ let highestPlatformY = 140;
 // ==================================================
 
 let velocityY = -14;
+
 const gravity = 0.5;
 
 let lastTime = 0;
@@ -193,10 +246,13 @@ let cameraY = 0;
 
 let score = 0;
 
-let highestPlayerY = player.y;
+let highestPlayerY =
+    player.y;
 
 let bestScore =
-    Number(localStorage.getItem('bestScore')) || 0;
+    Number(
+        localStorage.getItem('bestScore')
+    ) || 0;
 
 
 // ==================================================
@@ -204,6 +260,7 @@ let bestScore =
 // ==================================================
 
 let platformsLanded = 0;
+
 let lastLandedPlatform = null;
 
 
@@ -211,18 +268,10 @@ let lastLandedPlatform = null;
 // РАКЕТА
 // ==================================================
 
-// 10-е, 20-е, 30-е, 40-е...
-
-let nextRocketLanding = 10;
-
-// Нужно ли сейчас создавать ракету
+let nextRocketLanding =
+    ROCKET_INTERVAL;
 
 let rocketPending = false;
-
-
-// ==================================================
-// РАКЕТНЫЙ ПОЛЁТ
-// ==================================================
 
 let rockets = [];
 
@@ -232,39 +281,22 @@ let activeRocket = null;
 
 let rocketTime = 0;
 
+let rocketStartY = 0;
 
-// Примерно 6 секунд
-
-const rocketDuration = 6000;
-
-
-// На сколько платформ вверх
-
-const ROCKET_PLATFORMS_UP = 20;
-
-
-// Платформа, на которую приземляемся
+let rocketTargetY = 0;
 
 let rocketLandingPlatform = null;
 
 
-// Начальная координата игрока
-
-let rocketStartY = 0;
-
-
-// Точная конечная координата игрока
-
-let rocketTargetY = 0;
-
-
 // ==================================================
-// БЕЗОПАСНАЯ ПЛАТФОРМА
+// БЕЗОПАСНАЯ ЗОНА ПОСЛЕ РАКЕТЫ
 // ==================================================
 
-let safeRocketPlatform = null;
+let safeRocketPlatformIndex = null;
 
-let safeRocketPlatformUntil = 0;
+let safeRocketPlatformY = null;
+
+let rocketLandingGraceTime = 0;
 
 
 // ==================================================
@@ -287,6 +319,7 @@ let moveRight = false;
 // ==================================================
 
 const startClouds = [
+
     {
         x: 30,
         y: 100,
@@ -312,19 +345,35 @@ const startClouds = [
     }
 ];
 
-let clouds = startClouds.map(function (cloud) {
-    return { ...cloud };
-});
+
+let clouds =
+    startClouds.map(function (cloud) {
+
+        return {
+            ...cloud
+        };
+    });
+
 
 let highestCloudY = 500;
 
 
+// ==================================================
+// ОБЛАКА
+// ==================================================
+
 function createCloud(y) {
 
     return {
-        x: Math.random() * 330,
+
+        x:
+            Math.random() * 330,
+
         y: y,
-        size: 0.8 + Math.random() * 0.6
+
+        size:
+            0.8 +
+            Math.random() * 0.6
     };
 }
 
@@ -332,17 +381,26 @@ function createCloud(y) {
 function addCloud() {
 
     highestCloudY -=
-        140 + Math.random() * 100;
+        140 +
+        Math.random() * 100;
+
 
     clouds.push(
-        createCloud(highestCloudY)
+        createCloud(
+            highestCloudY
+        )
     );
 }
 
 
-function drawCloud(x, y, size) {
+function drawCloud(
+    x,
+    y,
+    size
+) {
 
-    ctx.fillStyle = 'white';
+    ctx.fillStyle =
+        'white';
 
     ctx.beginPath();
 
@@ -382,15 +440,17 @@ function drawCloud(x, y, size) {
 
 
 // ==================================================
-// ОБЫЧНЫЕ ПЛАТФОРМЫ
+// ПЛАТФОРМЫ
 // ==================================================
 
 function getNormalPlatforms() {
 
-    return platforms.filter(function (platform) {
+    return platforms.filter(
+        function (platform) {
 
-        return !platform.isAlternative;
-    });
+            return !platform.isAlternative;
+        }
+    );
 }
 
 
@@ -399,209 +459,542 @@ function createPlatform(y) {
     const normalPlatforms =
         getNormalPlatforms();
 
+
     const previousPlatform =
         normalPlatforms[
             normalPlatforms.length - 1
         ];
 
+
     const direction =
-        Math.random() < 0.5 ? -1 : 1;
+        Math.random() < 0.5
+            ? -1
+            : 1;
+
 
     const distance =
-        80 + Math.random() * 40;
+        70 +
+        Math.random() * 50;
+
 
     let newX =
         previousPlatform.x +
         direction * distance;
 
+
     if (newX < 0) {
         newX = 0;
     }
 
-    if (newX > canvas.width - 100) {
-        newX = canvas.width - 100;
+
+    if (
+        newX >
+        canvas.width - 100
+    ) {
+
+        newX =
+            canvas.width - 100;
     }
 
+
     return {
+
         x: newX,
+
         y: y,
+
         width: 100,
+
         height: 20,
+
         isAlternative: false,
+
         isRocketLanding: false
     };
 }
 
 
-function createAlternativePlatform(dangerousPlatform) {
+function createAlternativePlatform(
+    mainPlatform
+) {
 
     let newX;
 
-    if (dangerousPlatform.x < 200) {
 
-        newX = Math.max(
-            0,
-            dangerousPlatform.x - 150
-        );
+    if (
+        mainPlatform.x >= 200
+    ) {
+
+        newX =
+            Math.max(
+                0,
+                mainPlatform.x - 150
+            );
 
     } else {
 
-        newX = Math.min(
-            canvas.width - 100,
-            dangerousPlatform.x + 150
-        );
+        newX =
+            Math.min(
+                canvas.width - 100,
+                mainPlatform.x + 150
+            );
     }
 
+
     return {
+
         x: newX,
-        y: dangerousPlatform.y,
+
+        y: mainPlatform.y,
+
         width: 100,
+
         height: 20,
+
         isAlternative: true,
+
         isRocketLanding: false
     };
 }
 
 
+// ==================================================
+// БЕЗОПАСНАЯ ЗОНА РАКЕТЫ
+// ПО НОМЕРУ ПЛАТФОРМЫ
+// ==================================================
+
+function isInRocketSafeZone(
+    platformIndex
+) {
+
+    if (
+        safeRocketPlatformIndex === null
+    ) {
+
+        return false;
+    }
+
+
+    return (
+
+        platformIndex >=
+        safeRocketPlatformIndex &&
+
+        platformIndex <
+        safeRocketPlatformIndex +
+        ROCKET_SAFE_PLATFORMS
+    );
+}
+
+
+// ==================================================
+// БЕЗОПАСНАЯ ЗОНА РАКЕТЫ
+// ПО Y-КООРДИНАТЕ
+// ==================================================
+
+function isPlatformInsideRocketSafeZone(
+    platform
+) {
+
+    if (
+        safeRocketPlatformY === null
+    ) {
+
+        return false;
+    }
+
+
+    const safeTop =
+        safeRocketPlatformY -
+        (
+            ROCKET_SAFE_PLATFORMS *
+            PLATFORM_GAP
+        );
+
+
+    const safeBottom =
+        safeRocketPlatformY +
+        120;
+
+
+    return (
+
+        platform.y >= safeTop &&
+
+        platform.y <= safeBottom
+    );
+}
+
+
+// ==================================================
+// ДОБАВЛЕНИЕ ПЛАТФОРМЫ
+// ==================================================
+
 function addPlatform() {
 
-    highestPlatformY -= 90;
+    highestPlatformY -=
+        PLATFORM_GAP;
+
 
     const newPlatform =
-        createPlatform(highestPlatformY);
+        createPlatform(
+            highestPlatformY
+        );
 
-    platforms.push(newPlatform);
 
-    maybeAddObstacleArea(newPlatform);
+    platforms.push(
+        newPlatform
+    );
+
+
+    setupMonsterZone(
+        newPlatform
+    );
+
 
     checkRocketPending();
 }
 
 
 // ==================================================
-// ПОМЕХИ / МОНСТРИКИ
+// МОНСТРИКИ
 // ==================================================
 
 let obstacles = [];
 
-let lastObstaclePlatformIndex = -10;
 
+// ==================================================
+// НУЖЕН ЛИ МОНСТРИК
+// ==================================================
 
-function createObstacle(y) {
+function shouldCreateMonster(
+    platformNumber
+) {
 
-    return {
-        x: Math.random() * 330,
-        y: y,
-        width: 35,
-        height: 35,
-        speed: 2 + Math.random() * 1.5,
-        direction:
-            Math.random() < 0.5 ? -1 : 1
-    };
-}
-
-
-function addObstacle(platform) {
-
-    // На платформу для ракеты
-    // монстра не ставим
-
-    if (platform.isRocketLanding) {
-        return;
-    }
-
-    const obstacle =
-        createObstacle(
-            platform.y - 65
-        );
-
-    if (platform.x < 200) {
-
-        obstacle.x =
-            Math.min(
-                canvas.width -
-                obstacle.width,
-                platform.x + 60
-            );
-
-    } else {
-
-        obstacle.x =
-            Math.max(
-                0,
-                platform.x - 20
-            );
-    }
-
-    obstacles.push(obstacle);
-
-    lastObstaclePlatformIndex =
-        getNormalPlatforms().indexOf(platform);
-}
-
-
-function maybeAddObstacleArea(platform) {
-
-    // На ракетной платформе
-    // монстр никогда не появляется
-
-    if (platform.isRocketLanding) {
-        return;
-    }
-
-    const normalPlatforms =
-        getNormalPlatforms();
-
-    const index =
-        normalPlatforms.indexOf(platform);
-
-    if (index < 0) {
-        return;
-    }
-
-    // Монстрики не слишком часто
+    // Первые 20 платформ
 
     if (
-        index -
-        lastObstaclePlatformIndex <
-        6
+        platformNumber <= 20
     ) {
-        return;
+
+        return false;
     }
 
-    // Вероятность
+
+    // 21, 41, 61, 81...
+
+    const monsterPlatform =
+        (
+            platformNumber -
+            FIRST_MONSTER_PLATFORM
+        ) %
+        MONSTER_INTERVAL ===
+        0;
+
 
     if (
-        Math.random() > 0.30
+        !monsterPlatform
     ) {
-        return;
+
+        return false;
     }
 
-    addObstacle(platform);
 
-    // Обязательно добавляем
-    // альтернативную платформу
-    // с другой стороны
-
-    const alternativePlatform =
-        createAlternativePlatform(
-            platform
-        );
-
-    platforms.push(
-        alternativePlatform
+    return (
+        Math.random() <=
+        MONSTER_CHANCE
     );
 }
 
 
-function updateObstacles(deltaTime) {
+// ==================================================
+// ПОДГОТОВКА ЗОНЫ МОНСТРИКА
+// ==================================================
 
-    for (const obstacle of obstacles) {
+function setupMonsterZone(
+    nextPlatform
+) {
+
+    const normalPlatforms =
+        getNormalPlatforms();
+
+
+    const nextIndex =
+        normalPlatforms.indexOf(
+            nextPlatform
+        );
+
+
+    if (
+        nextIndex < 1
+    ) {
+
+        return;
+    }
+
+
+    const platformNumber =
+        nextIndex + 1;
+
+
+    // Первые 20
+
+    if (
+        platformNumber <= 20
+    ) {
+
+        return;
+    }
+
+
+    // После ракеты
+    // 20 платформ безопасности
+
+    if (
+        isInRocketSafeZone(
+            nextIndex
+        )
+    ) {
+
+        return;
+    }
+
+
+    // Дополнительная защита
+    // по координате
+
+    if (
+        isPlatformInsideRocketSafeZone(
+            nextPlatform
+        )
+    ) {
+
+        return;
+    }
+
+
+    // Ракетная платформа
+
+    if (
+        nextPlatform.isRocketLanding
+    ) {
+
+        return;
+    }
+
+
+    if (
+        !shouldCreateMonster(
+            platformNumber
+        )
+    ) {
+
+        return;
+    }
+
+
+    const currentPlatform =
+        normalPlatforms[
+            nextIndex - 1
+        ];
+
+
+    if (
+        isInRocketSafeZone(
+            nextIndex - 1
+        )
+    ) {
+
+        return;
+    }
+
+
+    if (
+        isPlatformInsideRocketSafeZone(
+            currentPlatform
+        )
+    ) {
+
+        return;
+    }
+
+
+    createMonsterZone(
+        currentPlatform,
+        nextPlatform
+    );
+}
+
+
+// ==================================================
+// СОЗДАНИЕ ЗОНЫ МОНСТРИКА
+// ==================================================
+
+function createMonsterZone(
+    currentPlatform,
+    nextPlatform
+) {
+
+    const normalPlatforms =
+        getNormalPlatforms();
+
+
+    const nextIndex =
+        normalPlatforms.indexOf(
+            nextPlatform
+        );
+
+
+    if (
+        nextIndex < 0
+    ) {
+
+        return;
+    }
+
+
+    // ----------------------------------------------
+    // МОНСТРИК МЕЖДУ ПЛАТФОРМАМИ
+    // ----------------------------------------------
+
+    const gapTop =
+        nextPlatform.y +
+        nextPlatform.height;
+
+
+    const gapBottom =
+        currentPlatform.y;
+
+
+    const monsterY =
+        gapTop +
+        (
+            gapBottom -
+            gapTop
+        ) /
+        2 -
+        18;
+
+
+    let monsterX;
+
+
+    if (
+        nextPlatform.x < 200
+    ) {
+
+        monsterX =
+            Math.min(
+                canvas.width - 35,
+                nextPlatform.x + 125
+            );
+
+    } else {
+
+        monsterX =
+            Math.max(
+                0,
+                nextPlatform.x - 90
+            );
+    }
+
+
+    // ----------------------------------------------
+    // МЕДЛЕННЫЙ МОНСТРИК
+    // ----------------------------------------------
+
+    const obstacle = {
+
+        x: monsterX,
+
+        y: monsterY,
+
+        width: 35,
+
+        height: 35,
+
+        speed:
+            0.8 +
+            Math.random() * 0.6,
+
+        direction:
+            Math.random() < 0.5
+                ? -1
+                : 1
+    };
+
+
+    obstacles.push(
+        obstacle
+    );
+
+
+    // ----------------------------------------------
+    // ЗАПАСНАЯ ПЛАТФОРМА
+    // ----------------------------------------------
+
+    const alternativePlatform =
+        createAlternativePlatform(
+            nextPlatform
+        );
+
+
+    const alternativeDistance =
+        Math.abs(
+            alternativePlatform.x -
+            nextPlatform.x
+        );
+
+
+    if (
+        alternativeDistance >= 80
+    ) {
+
+        if (
+            !isInRocketSafeZone(
+                nextIndex
+            ) &&
+            !isPlatformInsideRocketSafeZone(
+                alternativePlatform
+            )
+        ) {
+
+            platforms.push(
+                alternativePlatform
+            );
+        }
+    }
+
+
+    console.log(
+        '👾 Монстрик на платформе:',
+        nextIndex + 1
+    );
+
+    console.log(
+        '🛟 Запасная платформа создана'
+    );
+}
+
+
+// ==================================================
+// ДВИЖЕНИЕ МОНСТРИКОВ
+// ==================================================
+
+function updateObstacles(
+    deltaTime
+) {
+
+    for (
+        const obstacle
+        of obstacles
+    ) {
 
         obstacle.x +=
             obstacle.speed *
             obstacle.direction *
             deltaTime;
+
 
         if (
             obstacle.x <= 0 ||
@@ -610,254 +1003,263 @@ function updateObstacles(deltaTime) {
             canvas.width
         ) {
 
-            obstacle.direction *= -1;
+            obstacle.direction *=
+                -1;
         }
     }
 }
 
 
-function isNearRocketLandingPlatform(
-    obstacle,
-    platform
+// ==================================================
+// МОНСТРИК В БЕЗОПАСНОЙ ЗОНЕ
+// ПО Y
+// ==================================================
+
+function isObstacleInsideRocketSafeZone(
+    obstacle
 ) {
 
-    if (!platform) {
+    if (
+        safeRocketPlatformY === null
+    ) {
+
         return false;
     }
 
-    const left =
-        platform.x - 80;
 
-    const right =
-        platform.x +
-        platform.width +
-        80;
+    const safeTop =
+        safeRocketPlatformY -
+        (
+            ROCKET_SAFE_PLATFORMS *
+            PLATFORM_GAP
+        );
 
-    const top =
-        platform.y - 120;
 
-    const bottom =
-        platform.y + 70;
+    const safeBottom =
+        safeRocketPlatformY +
+        120;
 
-    const centerX =
-        obstacle.x +
-        obstacle.width / 2;
 
-    const centerY =
+    const obstacleCenterY =
         obstacle.y +
         obstacle.height / 2;
 
+
     return (
-        centerX >= left &&
-        centerX <= right &&
-        centerY >= top &&
-        centerY <= bottom
+
+        obstacleCenterY >=
+        safeTop &&
+
+        obstacleCenterY <=
+        safeBottom
     );
 }
 
 
-function checkObstacleCollision(obstacle) {
+// ==================================================
+// СТОЛКНОВЕНИЕ С МОНСТРИКОМ
+// ==================================================
 
-    // На безопасной платформе
-    // монстр не опасен
+function checkObstacleCollision(
+    obstacle
+) {
+
+    // Полная безопасность
+    // после ракеты
 
     if (
-        isNearRocketLandingPlatform(
-            obstacle,
-            safeRocketPlatform
+        isObstacleInsideRocketSafeZone(
+            obstacle
         )
     ) {
+
         return false;
     }
 
+
+    // Короткая неуязвимость
+    // после посадки
+
+    if (
+        performance.now() <
+        rocketLandingGraceTime
+    ) {
+
+        return false;
+    }
+
+
     const playerLeft =
         player.x + 15;
+
 
     const playerRight =
         player.x +
         player.width -
         15;
 
+
     const playerTop =
         player.y + 15;
+
 
     const playerBottom =
         player.y +
         player.height -
         15;
 
+
     const obstacleLeft =
         obstacle.x;
+
 
     const obstacleRight =
         obstacle.x +
         obstacle.width;
 
+
     const obstacleTop =
         obstacle.y;
+
 
     const obstacleBottom =
         obstacle.y +
         obstacle.height;
 
+
     return (
-        playerRight > obstacleLeft &&
-        playerLeft < obstacleRight &&
-        playerBottom > obstacleTop &&
-        playerTop < obstacleBottom
+
+        playerRight >
+        obstacleLeft &&
+
+        playerLeft <
+        obstacleRight &&
+
+        playerBottom >
+        obstacleTop &&
+
+        playerTop <
+        obstacleBottom
     );
 }
 
 
 // ==================================================
-// СОЗДАНИЕ БУДУЩИХ ПЛАТФОРМ ДЛЯ РАКЕТЫ
+// СОЗДАНИЕ ПЛАТФОРМ ДЛЯ РАКЕТЫ
 // ==================================================
 
-function prepareRocketRoute() {
-
-    if (!lastLandedPlatform) {
-        return null;
-    }
-
-    const normalPlatforms =
-        getNormalPlatforms();
-
-    const currentIndex =
-        normalPlatforms.indexOf(
-            lastLandedPlatform
-        );
-
-    if (currentIndex < 0) {
-        return null;
-    }
-
-    const targetIndex =
-        currentIndex +
-        ROCKET_PLATFORMS_UP;
-
-    // Создаём платформы,
-    // пока не будет точки посадки
+function ensureNormalPlatforms(
+    countNeeded
+) {
 
     while (
-        getNormalPlatforms().length <=
-        targetIndex
+        getNormalPlatforms().length <
+        countNeeded
     ) {
 
-        highestPlatformY -= 90;
+        highestPlatformY -=
+            PLATFORM_GAP;
+
 
         const newPlatform =
             createPlatform(
                 highestPlatformY
             );
 
-        platforms.push(newPlatform);
+
+        platforms.push(
+            newPlatform
+        );
+
+        /*
+            Здесь монстрики
+            специально не создаются.
+
+            Эти платформы нужны
+            для маршрута ракеты.
+        */
     }
-
-    const updatedPlatforms =
-        getNormalPlatforms();
-
-    const landingPlatform =
-        updatedPlatforms[targetIndex];
-
-    if (!landingPlatform) {
-        return null;
-    }
-
-    // Эта платформа теперь
-    // предназначена для ракеты
-
-    landingPlatform.isRocketLanding =
-        true;
-
-    // Убираем возможных монстриков
-    // рядом с ней
-
-    obstacles =
-        obstacles.filter(function (obstacle) {
-
-            return !isNearRocketLandingPlatform(
-                obstacle,
-                landingPlatform
-            );
-        });
-
-    // Включаем безопасную зону
-
-    safeRocketPlatform =
-        landingPlatform;
-
-    safeRocketPlatformUntil =
-        Infinity;
-
-    return landingPlatform;
 }
 
 
 // ==================================================
-// ДОБАВЛЕНИЕ РАКЕТЫ ВПЕРЕДИ
+// РАКЕТА ВПЕРЕДИ
 // ==================================================
 
-function addRocketAhead() {
+function createRocketAhead() {
 
-    if (!lastLandedPlatform) {
-        return;
+    if (
+        !lastLandedPlatform
+    ) {
+
+        return false;
     }
 
-    if (rocketActive) {
-        return;
-    }
-
-    const existingRocket =
-        rockets.some(function (rocket) {
-
-            return rocket.active;
-        });
-
-    if (existingRocket) {
-        return;
-    }
 
     const normalPlatforms =
         getNormalPlatforms();
+
 
     const currentIndex =
         normalPlatforms.indexOf(
             lastLandedPlatform
         );
 
-    if (currentIndex < 0) {
-        return;
-    }
-
-    // Ракета появляется
-    // на платформе впереди
-
-    const rocketPlatform =
-        normalPlatforms[
-            currentIndex + 3
-        ];
-
-    if (!rocketPlatform) {
-        return;
-    }
-
-    // Не ставим ракеты
-    // на специальные альтернативные
-    // платформы
 
     if (
-        rocketPlatform.isAlternative
+        currentIndex < 0
     ) {
-        return;
+
+        return false;
     }
+
+
+    const displayIndex =
+        currentIndex +
+        ROCKET_DISPLAY_OFFSET;
+
+
+    ensureNormalPlatforms(
+        displayIndex + 1
+    );
+
+
+    const updatedPlatforms =
+        getNormalPlatforms();
+
+
+    const displayPlatform =
+        updatedPlatforms[
+            displayIndex
+        ];
+
+
+    if (
+        !displayPlatform
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        displayPlatform.isRocketLanding
+    ) {
+
+        return false;
+    }
+
 
     const rocket = {
 
         x:
-            rocketPlatform.x + 10,
+            displayPlatform.x +
+            displayPlatform.width / 2 -
+            22,
 
         y:
-            rocketPlatform.y - 72,
+            displayPlatform.y -
+            72,
 
         width: 44,
 
@@ -866,14 +1268,21 @@ function addRocketAhead() {
         active: true,
 
         platform:
-            rocketPlatform
+            displayPlatform
     };
 
-    rockets.push(rocket);
+
+    rockets.push(
+        rocket
+    );
+
 
     console.log(
         '🚀 РАКЕТА ПОЯВИЛАСЬ ВПЕРЕДИ!'
     );
+
+
+    return true;
 }
 
 
@@ -883,70 +1292,211 @@ function addRocketAhead() {
 
 function checkRocketPending() {
 
-    if (!rocketPending) {
-        return;
-    }
-
-    if (rocketActive) {
-        return;
-    }
-
-    const existingRocket =
-        rockets.some(function (rocket) {
-
-            return rocket.active;
-        });
-
-    if (existingRocket) {
-        return;
-    }
-
-    addRocketAhead();
-
     if (
-        rockets.some(function (rocket) {
-            return rocket.active;
-        })
+        !rocketPending
     ) {
 
-        rocketPending = false;
+        return;
+    }
 
-        nextRocketLanding += 10;
+
+    if (
+        rocketActive
+    ) {
+
+        return;
+    }
+
+
+    const exists =
+        rockets.some(
+            function (rocket) {
+
+                return rocket.active;
+            }
+        );
+
+
+    if (
+        exists
+    ) {
+
+        return;
+    }
+
+
+    const created =
+        createRocketAhead();
+
+
+    if (
+        created
+    ) {
+
+        rocketPending =
+            false;
+
+
+        nextRocketLanding +=
+            ROCKET_INTERVAL;
+
+
+        console.log(
+            '🚀 Следующая ракета после:',
+            nextRocketLanding
+        );
     }
 }
 
 
 // ==================================================
-// СТОЛКНОВЕНИЕ С РАКЕТОЙ
+// ПОДГОТОВКА ПОСАДКИ РАКЕТЫ
 // ==================================================
 
-function checkRocketCollision(rocket) {
+function prepareRocketLanding() {
+
+    if (
+        !activeRocket ||
+        !activeRocket.platform
+    ) {
+
+        return null;
+    }
+
+
+    const normalPlatforms =
+        getNormalPlatforms();
+
+
+    const rocketPlatformIndex =
+        normalPlatforms.indexOf(
+            activeRocket.platform
+        );
+
+
+    if (
+        rocketPlatformIndex < 0
+    ) {
+
+        return null;
+    }
+
+
+    const targetIndex =
+        rocketPlatformIndex +
+        ROCKET_PLATFORMS_UP;
+
+
+    ensureNormalPlatforms(
+        targetIndex + 1
+    );
+
+
+    const updatedPlatforms =
+        getNormalPlatforms();
+
+
+    const landingPlatform =
+        updatedPlatforms[
+            targetIndex
+        ];
+
+
+    if (
+        !landingPlatform
+    ) {
+
+        return null;
+    }
+
+
+    // ----------------------------------------------
+    // РАКЕТНАЯ ПЛАТФОРМА
+    // ----------------------------------------------
+
+    landingPlatform.isRocketLanding =
+        true;
+
+
+    // ----------------------------------------------
+    // СОХРАНЯЕМ ИНДЕКС
+    // ----------------------------------------------
+
+    safeRocketPlatformIndex =
+        targetIndex;
+
+
+    // ----------------------------------------------
+    // СОХРАНЯЕМ Y
+    // ----------------------------------------------
+
+    safeRocketPlatformY =
+        landingPlatform.y;
+
+
+    // ----------------------------------------------
+    // УДАЛЯЕМ ВСЕ МОНСТРЫ
+    // В БЕЗОПАСНОЙ ЗОНЕ
+    // ----------------------------------------------
+
+    obstacles =
+        obstacles.filter(
+            function (obstacle) {
+
+                return !isObstacleInsideRocketSafeZone(
+                    obstacle
+                );
+            }
+        );
+
+
+    return landingPlatform;
+}
+
+
+// ==================================================
+// COLLISION РАКЕТЫ
+// ==================================================
+
+function checkRocketCollision(
+    rocket
+) {
 
     const playerLeft =
         player.x + 8;
+
 
     const playerRight =
         player.x +
         player.width -
         8;
 
+
     const playerTop =
         player.y + 8;
+
 
     const playerBottom =
         player.y +
         player.height -
         8;
 
+
     return (
-        playerRight > rocket.x &&
+
+        playerRight >
+        rocket.x &&
+
         playerLeft <
-            rocket.x +
-            rocket.width &&
-        playerBottom > rocket.y &&
+        rocket.x +
+        rocket.width &&
+
+        playerBottom >
+        rocket.y &&
+
         playerTop <
-            rocket.y +
-            rocket.height
+        rocket.y +
+        rocket.height
     );
 }
 
@@ -955,77 +1505,91 @@ function checkRocketCollision(rocket) {
 // АКТИВАЦИЯ РАКЕТЫ
 // ==================================================
 
-function activateRocket(rocket) {
+function activateRocket(
+    rocket
+) {
 
-    // Сначала готовим
-    // реальный маршрут
-    // и реальную платформу
-    // для посадки
+    activeRocket =
+        rocket;
+
 
     const landingPlatform =
-        prepareRocketRoute();
+        prepareRocketLanding();
 
-    if (!landingPlatform) {
 
-        console.log(
-            '🚀 Не удалось подготовить платформу посадки'
-        );
+    if (
+        !landingPlatform
+    ) {
+
+        activeRocket =
+            null;
 
         return;
     }
 
-    rocketActive = true;
 
-    rocketTime = 0;
+    rocketActive =
+        true;
 
-    activeRocket = rocket;
+
+    rocketTime =
+        0;
+
+
+    rocketStartY =
+        player.y;
+
 
     rocketLandingPlatform =
         landingPlatform;
 
-    rocketStartY =
-        player.y;
 
     rocketTargetY =
         landingPlatform.y -
         player.height +
         12;
 
-    // Полностью отключаем
-    // обычную физику
 
-    velocityY = 0;
+    velocityY =
+        0;
 
-    // Даём бонус
 
-    score += 200;
+    score +=
+        200;
+
 
     updateBestScore();
 
-    // Эта ракета больше
-    // не активируется повторно
 
-    rocket.active = false;
+    // Нельзя активировать
+    // повторно
 
-    // Удаляем монстров
-    // рядом с платформой
+    rocket.active =
+        false;
+
+
+    // Ещё раз чистим
+    // безопасную зону
 
     obstacles =
-        obstacles.filter(function (obstacle) {
+        obstacles.filter(
+            function (obstacle) {
 
-            return !isNearRocketLandingPlatform(
-                obstacle,
-                landingPlatform
-            );
-        });
+                return !isObstacleInsideRocketSafeZone(
+                    obstacle
+                );
+            }
+        );
+
 
     console.log(
         '🚀 РАКЕТА АКТИВИРОВАНА! +200'
     );
 
+
     console.log(
-        '🚀 Посадочная платформа:',
-        landingPlatform.y
+        '🚀 Посадка на платформу №',
+        safeRocketPlatformIndex + 1
     );
 }
 
@@ -1034,121 +1598,164 @@ function activateRocket(rocket) {
 // РИСОВАНИЕ РАКЕТЫ
 // ==================================================
 
-function drawRocket(rocket) {
+function drawRocket(
+    rocket
+) {
 
-    const x = rocket.x;
-    const y = rocket.y;
+    const x =
+        rocket.x;
+
+
+    const y =
+        rocket.y;
+
 
     // Огонь
 
-    ctx.fillStyle = '#ff9f1a';
+    ctx.fillStyle =
+        '#ff9f1a';
+
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 8,
         y + 48
     );
+
 
     ctx.lineTo(
         x + 22,
         y + 84
     );
 
+
     ctx.lineTo(
         x + 36,
         y + 48
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 
-    // Внутренний огонь
 
-    ctx.fillStyle = '#e74c3c';
+    // Красная часть огня
+
+    ctx.fillStyle =
+        '#e74c3c';
+
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 14,
         y + 48
     );
 
+
     ctx.lineTo(
         x + 22,
         y + 72
     );
+
 
     ctx.lineTo(
         x + 30,
         y + 48
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 
+
     // Корпус
 
-    ctx.fillStyle = '#ecf0f1';
+    ctx.fillStyle =
+        '#ecf0f1';
+
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 8,
         y + 15
     );
 
+
     ctx.lineTo(
         x + 36,
         y + 15
     );
 
+
     ctx.lineTo(
         x + 36,
         y + 50
     );
+
 
     ctx.lineTo(
         x + 8,
         y + 50
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 
+
     // Нос
 
-    ctx.fillStyle = '#e74c3c';
+    ctx.fillStyle =
+        '#e74c3c';
+
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 22,
         y
     );
 
+
     ctx.lineTo(
         x,
         y + 18
     );
+
 
     ctx.lineTo(
         x + 44,
         y + 18
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 
+
     // Окно
 
-    ctx.fillStyle = '#3498db';
+    ctx.fillStyle =
+        '#3498db';
+
 
     ctx.beginPath();
+
 
     ctx.arc(
         x + 22,
@@ -1158,53 +1765,68 @@ function drawRocket(rocket) {
         Math.PI * 2
     );
 
+
     ctx.fill();
+
 
     // Левое крыло
 
-    ctx.fillStyle = '#95a5a6';
+    ctx.fillStyle =
+        '#95a5a6';
+
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 8,
         y + 36
     );
 
+
     ctx.lineTo(
         x - 8,
         y + 55
     );
+
 
     ctx.lineTo(
         x + 12,
         y + 48
     );
 
+
     ctx.closePath();
 
+
     ctx.fill();
+
 
     // Правое крыло
 
     ctx.beginPath();
+
 
     ctx.moveTo(
         x + 36,
         y + 36
     );
 
+
     ctx.lineTo(
         x + 52,
         y + 55
     );
+
 
     ctx.lineTo(
         x + 32,
         y + 48
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 }
@@ -1219,47 +1841,57 @@ function updateRocketFlight(
     currentTime
 ) {
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
+
         return;
     }
 
+
     rocketTime +=
-        deltaTime * 16.67;
+        deltaTime *
+        16.67;
+
 
     let progress =
         rocketTime /
-        rocketDuration;
+        ROCKET_DURATION;
 
-    if (progress > 1) {
-        progress = 1;
+
+    if (
+        progress > 1
+    ) {
+
+        progress =
+            1;
     }
 
-    /*
-        Плавная траектория:
 
-        0     = начало
-        0.5   = середина
-        1     = точка посадки
-    */
+    // Плавная траектория
 
-    const easedProgress =
+    const smoothProgress =
         progress < 0.5
 
-            ? 2 *
-              progress *
-              progress
+            ?
 
-            : 1 -
-              Math.pow(
-                  -2 * progress + 2,
-                  2
-              ) /
-              2;
+            2 *
+            progress *
+            progress
+
+            :
+
+            1 -
+            Math.pow(
+                -2 * progress + 2,
+                2
+            ) /
+            2;
 
 
-    // Движение игрока
-    // точно от старта
-    // к целевой платформе
+    // Игрок движется
+    // от старта к конкретной
+    // платформе посадки
 
     player.y =
         rocketStartY +
@@ -1267,18 +1899,20 @@ function updateRocketFlight(
             rocketTargetY -
             rocketStartY
         ) *
-        easedProgress;
+        smoothProgress;
 
 
-    // Ракета летит
-    // вместе с игроком
+    // Ракета следует за игроком
 
-    if (activeRocket) {
+    if (
+        activeRocket
+    ) {
 
         activeRocket.x =
             player.x +
             player.width / 2 -
             activeRocket.width / 2;
+
 
         activeRocket.y =
             player.y -
@@ -1292,6 +1926,7 @@ function updateRocketFlight(
     const targetCameraY =
         200 -
         player.y;
+
 
     if (
         targetCameraY >
@@ -1308,13 +1943,14 @@ function updateRocketFlight(
 
 
     // ==================================================
-    // ТОЧНАЯ ПОСАДКА
+    // ПОСАДКА
     // ==================================================
 
-    if (progress >= 1) {
+    if (
+        progress >= 1
+    ) {
 
-        // ПРИНУДИТЕЛЬНО ставим
-        // игрока ровно на платформу
+        // ТОЧНАЯ ПОСАДКА
 
         player.y =
             rocketLandingPlatform.y -
@@ -1326,9 +1962,6 @@ function updateRocketFlight(
             false;
 
 
-        // Камера остаётся
-        // на нужной высоте
-
         cameraY =
             Math.max(
                 0,
@@ -1337,39 +1970,81 @@ function updateRocketFlight(
             );
 
 
-        // Обычный прыжок
-        // начинается только сейчас
+        // Новый обычный прыжок
 
         velocityY =
             -14;
 
 
-        // Платформа полностью
-        // безопасна некоторое время
+        // ----------------------------------------------
+        // БЕЗОПАСНАЯ ЗОНА
+        // ----------------------------------------------
 
-        safeRocketPlatform =
-            rocketLandingPlatform;
+        safeRocketPlatformY =
+            rocketLandingPlatform.y;
 
-        safeRocketPlatformUntil =
-            currentTime + 5000;
+
+        safeRocketPlatformIndex =
+            getNormalPlatforms().indexOf(
+                rocketLandingPlatform
+            );
+
+
+        // ----------------------------------------------
+        // 2 СЕКУНДЫ НЕУЯЗВИМОСТИ
+        // ----------------------------------------------
+
+        rocketLandingGraceTime =
+            performance.now() +
+            2000;
+
+
+        // ----------------------------------------------
+        // УДАЛЯЕМ СУЩЕСТВУЮЩИХ
+        // МОНСТРОВ В БЕЗОПАСНОЙ ЗОНЕ
+        // ----------------------------------------------
+
+        obstacles =
+            obstacles.filter(
+                function (obstacle) {
+
+                    return !isObstacleInsideRocketSafeZone(
+                        obstacle
+                    );
+                }
+            );
 
 
         activeRocket =
             null;
 
+
         rocketLandingPlatform =
             null;
 
 
-        rockets =
-            rockets.filter(function (item) {
+        rocketTime =
+            0;
 
-                return item.active;
-            });
+
+        rockets =
+            rockets.filter(
+                function (rocket) {
+
+                    return rocket.active;
+                }
+            );
 
 
         console.log(
-            '🚀 ПЕРСОНАЖ ТОЧНО ПРИЗЕМЛИЛСЯ НА ПЛАТФОРМУ!'
+            '🚀 ПЕРСОНАЖ ПРИЗЕМЛИЛСЯ НА БЕЗОПАСНУЮ ПЛАТФОРМУ'
+        );
+
+
+        console.log(
+            '🛡️ Следующие',
+            ROCKET_SAFE_PLATFORMS,
+            'платформ без монстров'
         );
     }
 }
@@ -1389,6 +2064,7 @@ function updateBestScore() {
         bestScore =
             score;
 
+
         localStorage.setItem(
             'bestScore',
             bestScore
@@ -1406,6 +2082,7 @@ function drawGameOver() {
     ctx.fillStyle =
         'rgba(0, 0, 0, 0.6)';
 
+
     ctx.fillRect(
         0,
         0,
@@ -1413,14 +2090,18 @@ function drawGameOver() {
         canvas.height
     );
 
+
     ctx.fillStyle =
         'white';
+
 
     ctx.textAlign =
         'center';
 
+
     ctx.font =
         'bold 38px Arial';
+
 
     ctx.fillText(
         'GAME OVER',
@@ -1428,25 +2109,35 @@ function drawGameOver() {
         230
     );
 
+
     ctx.font =
         '24px Arial';
 
+
     ctx.fillText(
-        'SCORE: ' + score,
+        'SCORE: ' +
+        score,
         canvas.width / 2,
         275
     );
 
+
     ctx.fillText(
-        'BEST: ' + bestScore,
+        'BEST: ' +
+        bestScore,
         canvas.width / 2,
         310
     );
 
+
     ctx.textAlign =
         'left';
 
-    if (restartButton) {
+
+    if (
+        restartButton
+    ) {
+
         restartButton.style.display =
             'block';
     }
@@ -1459,30 +2150,50 @@ function drawGameOver() {
 
 function restartGame() {
 
-    if (restartButton) {
+    if (
+        restartButton
+    ) {
+
         restartButton.style.display =
             'none';
     }
 
-    player.x = 165;
-    player.y = 100;
 
-    velocityY = -14;
-    lastTime = 0;
+    player.x =
+        165;
 
-    cameraY = 0;
+    player.y =
+        100;
 
-    score = 0;
+
+    velocityY =
+        -14;
+
+    lastTime =
+        0;
+
+
+    cameraY =
+        0;
+
+
+    score =
+        0;
+
 
     highestPlayerY =
         player.y;
 
 
     platforms =
-        startPlatforms.map(function (platform) {
+        startPlatforms.map(
+            function (platform) {
 
-            return { ...platform };
-        });
+                return {
+                    ...platform
+                };
+            }
+        );
 
 
     highestPlatformY =
@@ -1492,12 +2203,14 @@ function restartGame() {
     platformsLanded =
         0;
 
+
     lastLandedPlatform =
         null;
 
 
     nextRocketLanding =
         10;
+
 
     rocketPending =
         false;
@@ -1506,37 +2219,52 @@ function restartGame() {
     rockets =
         [];
 
+
     rocketActive =
         false;
+
 
     activeRocket =
         null;
 
+
     rocketTime =
         0;
 
-    rocketLandingPlatform =
-        null;
 
     rocketStartY =
         0;
+
 
     rocketTargetY =
         0;
 
 
-    safeRocketPlatform =
+    rocketLandingPlatform =
         null;
 
-    safeRocketPlatformUntil =
+
+    safeRocketPlatformIndex =
+        null;
+
+
+    safeRocketPlatformY =
+        null;
+
+
+    rocketLandingGraceTime =
         0;
 
 
     clouds =
-        startClouds.map(function (cloud) {
+        startClouds.map(
+            function (cloud) {
 
-            return { ...cloud };
-        });
+                return {
+                    ...cloud
+                };
+            }
+        );
 
 
     highestCloudY =
@@ -1546,15 +2274,14 @@ function restartGame() {
     obstacles =
         [];
 
-    lastObstaclePlatformIndex =
-        -10;
-
 
     gameOver =
         false;
 
+
     moveLeft =
         false;
+
 
     moveRight =
         false;
@@ -1570,40 +2297,60 @@ function restartGame() {
 // GAME LOOP
 // ==================================================
 
-function gameLoop(currentTime) {
+function gameLoop(
+    currentTime
+) {
 
-    // --------------------------------------------------
+    // ==================================================
     // DELTA TIME
-    // --------------------------------------------------
+    // ==================================================
 
-    if (lastTime === 0) {
-        lastTime = currentTime;
+    if (
+        lastTime === 0
+    ) {
+
+        lastTime =
+            currentTime;
     }
+
 
     let deltaTime =
         (
             currentTime -
             lastTime
-        ) / 16.67;
+        ) /
+        16.67;
+
 
     lastTime =
         currentTime;
 
 
-    if (deltaTime > 2) {
-        deltaTime = 2;
+    if (
+        deltaTime > 2
+    ) {
+
+        deltaTime =
+            2;
     }
 
-    if (deltaTime < 0) {
-        deltaTime = 0;
+
+    if (
+        deltaTime < 0
+    ) {
+
+        deltaTime =
+            0;
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // GAME OVER
-    // --------------------------------------------------
+    // ==================================================
 
-    if (gameOver) {
+    if (
+        gameOver
+    ) {
 
         drawGameOver();
 
@@ -1611,30 +2358,13 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
-    // БЕЗОПАСНАЯ ПЛАТФОРМА
-    // --------------------------------------------------
+    // ==================================================
+    // ФИЗИКА
+    // ==================================================
 
     if (
-        safeRocketPlatform &&
-        safeRocketPlatformUntil !== Infinity &&
-        currentTime >
-        safeRocketPlatformUntil
+        rocketActive
     ) {
-
-        safeRocketPlatform =
-            null;
-
-        safeRocketPlatformUntil =
-            0;
-    }
-
-
-    // --------------------------------------------------
-    // ФИЗИКА
-    // --------------------------------------------------
-
-    if (rocketActive) {
 
         updateRocketFlight(
             deltaTime,
@@ -1647,26 +2377,34 @@ function gameLoop(currentTime) {
             gravity *
             deltaTime;
 
+
         player.y +=
             velocityY *
             deltaTime;
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ДВИЖЕНИЕ
-    // --------------------------------------------------
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
-        if (moveLeft) {
+        if (
+            moveLeft
+        ) {
 
             player.x -=
                 6 *
                 deltaTime;
         }
 
-        if (moveRight) {
+
+        if (
+            moveRight
+        ) {
 
             player.x +=
                 6 *
@@ -1675,13 +2413,18 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ГРАНИЦЫ
-    // --------------------------------------------------
+    // ==================================================
 
-    if (player.x < 0) {
-        player.x = 0;
+    if (
+        player.x < 0
+    ) {
+
+        player.x =
+            0;
     }
+
 
     if (
         player.x +
@@ -1695,9 +2438,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // КАМЕРА
-    // --------------------------------------------------
+    // ==================================================
 
     if (
         !rocketActive &&
@@ -1707,6 +2450,7 @@ function gameLoop(currentTime) {
         const targetCameraY =
             200 -
             player.y;
+
 
         if (
             targetCameraY >
@@ -1723,9 +2467,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // SCORE
-    // --------------------------------------------------
+    // ==================================================
 
     if (
         player.y <
@@ -1735,24 +2479,28 @@ function gameLoop(currentTime) {
         highestPlayerY =
             player.y;
 
+
         score =
             Math.max(
                 score,
+
                 Math.floor(
                     (
                         100 -
                         highestPlayerY
-                    ) / 10
+                    ) /
+                    10
                 )
             );
+
 
         updateBestScore();
     }
 
 
-    // --------------------------------------------------
-    // ГЕНЕРАЦИЯ ПЛАТФОРМ
-    // --------------------------------------------------
+    // ==================================================
+    // НОВЫЕ ПЛАТФОРМЫ
+    // ==================================================
 
     if (
         highestPlatformY >
@@ -1764,9 +2512,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
-    // ОБЛАКА
-    // --------------------------------------------------
+    // ==================================================
+    // НОВЫЕ ОБЛАКА
+    // ==================================================
 
     if (
         highestCloudY >
@@ -1778,11 +2526,13 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ПРИЗЕМЛЕНИЕ
-    // --------------------------------------------------
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
         for (
             const platform
@@ -1824,6 +2574,7 @@ function gameLoop(currentTime) {
                     player.height +
                     12;
 
+
                 velocityY =
                     -14;
 
@@ -1836,6 +2587,7 @@ function gameLoop(currentTime) {
                     lastLandedPlatform =
                         platform;
 
+
                     platformsLanded++;
 
 
@@ -1845,8 +2597,7 @@ function gameLoop(currentTime) {
                     );
 
 
-                    // Каждые 10 платформ
-                    // запускаем подготовку ракеты
+                    // Ракета каждые 10
 
                     if (
                         platformsLanded >=
@@ -1855,8 +2606,6 @@ function gameLoop(currentTime) {
 
                         rocketPending =
                             true;
-
-                        checkRocketPending();
                     }
                 }
 
@@ -1867,11 +2616,46 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
-    // ПОМЕХИ
-    // --------------------------------------------------
+    // ==================================================
+    // СОЗДАНИЕ РАКЕТЫ
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive &&
+        rocketPending
+    ) {
+
+        const created =
+            createRocketAhead();
+
+
+        if (
+            created
+        ) {
+
+            rocketPending =
+                false;
+
+
+            nextRocketLanding +=
+                ROCKET_INTERVAL;
+
+
+            console.log(
+                '🚀 Следующая ракета после:',
+                nextRocketLanding
+            );
+        }
+    }
+
+
+    // ==================================================
+    // ДВИЖЕНИЕ МОНСТРОВ
+    // ==================================================
+
+    if (
+        !rocketActive
+    ) {
 
         updateObstacles(
             deltaTime
@@ -1879,11 +2663,13 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
-    // СТОЛКНОВЕНИЕ С ПОМЕХОЙ
-    // --------------------------------------------------
+    // ==================================================
+    // СТОЛКНОВЕНИЕ С МОНСТРИКОМ
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
         for (
             const obstacle
@@ -1898,10 +2684,13 @@ function gameLoop(currentTime) {
 
                 updateBestScore();
 
+
                 gameOver =
                     true;
 
+
                 drawGameOver();
+
 
                 return;
             }
@@ -1909,11 +2698,13 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
-    // РАКЕТА
-    // --------------------------------------------------
+    // ==================================================
+    // СТОЛКНОВЕНИЕ С РАКЕТОЙ
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
         for (
             const rocket
@@ -1931,48 +2722,60 @@ function gameLoop(currentTime) {
                     rocket
                 );
 
+
                 break;
             }
         }
     }
 
 
-    // --------------------------------------------------
-    // УДАЛЕНИЕ ПРОПУЩЕННЫХ РАКЕТ
-    // --------------------------------------------------
+    // ==================================================
+    // УДАЛЕНИЕ ДАЛЁКИХ РАКЕТ
+    // ==================================================
 
     rockets =
-        rockets.filter(function (rocket) {
+        rockets.filter(
+            function (rocket) {
 
-            if (
-                rocket ===
-                activeRocket
-            ) {
-                return true;
+                if (
+                    rocket ===
+                    activeRocket
+                ) {
+
+                    return true;
+                }
+
+
+                const screenY =
+                    rocket.y +
+                    cameraY;
+
+
+                return (
+
+                    screenY >
+                    -150 &&
+
+                    screenY <
+                    canvas.height +
+                    250
+                );
             }
-
-            const screenY =
-                rocket.y +
-                cameraY;
-
-            return (
-                screenY >
-                -150 &&
-                screenY <
-                canvas.height + 250
-            );
-        });
+        );
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ПРОВЕРКА ПАДЕНИЯ
-    // --------------------------------------------------
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
         const playerScreenY =
             player.y +
             cameraY;
+
 
         const playerScreenBottom =
             playerScreenY +
@@ -1987,10 +2790,13 @@ function gameLoop(currentTime) {
 
             updateBestScore();
 
+
             gameOver =
                 true;
 
+
             drawGameOver();
+
 
             return;
         }
@@ -2009,12 +2815,13 @@ function gameLoop(currentTime) {
     );
 
 
-    // --------------------------------------------------
-    // ФОН
-    // --------------------------------------------------
+    // ==================================================
+    // НЕБО
+    // ==================================================
 
     ctx.fillStyle =
         '#bfe8ff';
+
 
     ctx.fillRect(
         0,
@@ -2024,9 +2831,9 @@ function gameLoop(currentTime) {
     );
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ОБЛАКА
-    // --------------------------------------------------
+    // ==================================================
 
     for (
         const cloud
@@ -2035,58 +2842,71 @@ function gameLoop(currentTime) {
 
         drawCloud(
             cloud.x,
+
             cloud.y +
             cameraY *
             0.3,
+
             cloud.size
         );
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // SCORE
-    // --------------------------------------------------
+    // ==================================================
 
     ctx.fillStyle =
         '#333';
 
+
     ctx.font =
         'bold 24px Arial';
+
 
     ctx.textAlign =
         'left';
 
+
     ctx.fillText(
         'SCORE: ' +
         score,
+
         15,
         35
     );
 
 
-    // --------------------------------------------------
+    // ==================================================
     // BEST
-    // --------------------------------------------------
+    // ==================================================
 
     ctx.textAlign =
         'right';
 
+
     ctx.fillText(
         'BEST: ' +
         bestScore,
-        canvas.width - 15,
+
+        canvas.width -
+        15,
+
         35
     );
+
 
     ctx.textAlign =
         'left';
 
 
-    // --------------------------------------------------
+    // ==================================================
     // МОНСТРИКИ
-    // --------------------------------------------------
+    // ==================================================
 
-    if (!rocketActive) {
+    if (
+        !rocketActive
+    ) {
 
         for (
             const obstacle
@@ -2115,9 +2935,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ПЕРСОНАЖ
-    // --------------------------------------------------
+    // ==================================================
 
     if (
         playerImage.complete &&
@@ -2139,9 +2959,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // ПЛАТФОРМЫ
-    // --------------------------------------------------
+    // ==================================================
 
     for (
         const platform
@@ -2169,12 +2989,13 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // РАКЕТА
-    // ПОВЕРХ ВСЕГО
-    // --------------------------------------------------
+    // ==================================================
 
-    if (activeRocket) {
+    if (
+        activeRocket
+    ) {
 
         drawRocket({
 
@@ -2223,9 +3044,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // NEXT FRAME
-    // --------------------------------------------------
+    // ==================================================
 
     requestAnimationFrame(
         gameLoop
@@ -2246,15 +3067,18 @@ document.addEventListener(
             'ArrowLeft'
         ) {
 
-            moveLeft = true;
+            moveLeft =
+                true;
         }
+
 
         if (
             event.key ===
             'ArrowRight'
         ) {
 
-            moveRight = true;
+            moveRight =
+                true;
         }
     }
 );
@@ -2269,15 +3093,18 @@ document.addEventListener(
             'ArrowLeft'
         ) {
 
-            moveLeft = false;
+            moveLeft =
+                false;
         }
+
 
         if (
             event.key ===
             'ArrowRight'
         ) {
 
-            moveRight = false;
+            moveRight =
+                false;
         }
     }
 );
@@ -2292,7 +3119,10 @@ const leftButton =
         'leftButton'
     );
 
-if (leftButton) {
+
+if (
+    leftButton
+) {
 
     leftButton.addEventListener(
         'pointerdown',
@@ -2300,9 +3130,11 @@ if (leftButton) {
 
             event.preventDefault();
 
-            moveLeft = true;
+            moveLeft =
+                true;
         }
     );
+
 
     leftButton.addEventListener(
         'pointerup',
@@ -2310,17 +3142,31 @@ if (leftButton) {
 
             event.preventDefault();
 
-            moveLeft = false;
+            moveLeft =
+                false;
         }
     );
+
 
     leftButton.addEventListener(
         'pointerleave',
         function () {
 
-            moveLeft = false;
+            moveLeft =
+                false;
         }
     );
+
+
+    leftButton.addEventListener(
+        'pointercancel',
+        function () {
+
+            moveLeft =
+                false;
+        }
+    );
+
 
     leftButton.addEventListener(
         'contextmenu',
@@ -2341,7 +3187,10 @@ const rightButton =
         'rightButton'
     );
 
-if (rightButton) {
+
+if (
+    rightButton
+) {
 
     rightButton.addEventListener(
         'pointerdown',
@@ -2349,9 +3198,11 @@ if (rightButton) {
 
             event.preventDefault();
 
-            moveRight = true;
+            moveRight =
+                true;
         }
     );
+
 
     rightButton.addEventListener(
         'pointerup',
@@ -2359,17 +3210,31 @@ if (rightButton) {
 
             event.preventDefault();
 
-            moveRight = false;
+            moveRight =
+                false;
         }
     );
+
 
     rightButton.addEventListener(
         'pointerleave',
         function () {
 
-            moveRight = false;
+            moveRight =
+                false;
         }
     );
+
+
+    rightButton.addEventListener(
+        'pointercancel',
+        function () {
+
+            moveRight =
+                false;
+        }
+    );
+
 
     rightButton.addEventListener(
         'contextmenu',
