@@ -1,19 +1,137 @@
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
 body {
     margin: 0;
-    background: #f5efe6;
+    padding: 0;
+
+    width: 100%;
+    min-height: 100%;
+
+    overflow: hidden;
+
+    overscroll-behavior: none;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+    font-family: Arial, sans-serif;
+}
+
+
+body {
+    background: #f5f5f5;
+}
+
+
+/* ====================
+   ИГРОВОЙ КОНТЕЙНЕР
+   ==================== */
+
+.game-container {
+    width: 100%;
+    min-height: 100dvh;
 
     display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    padding: 0;
+}
+
+
+/* ====================
+   ИГРОВОЕ ПОЛЕ
+   ==================== */
+
+#game {
+    display: block;
+
+    width: min(400px, 100vw);
+    height: auto;
+
+    max-height: calc(100dvh - 95px);
+
+    object-fit: contain;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+    touch-action: none;
+}
+
+
+/* ====================
+   КНОПКИ
+   ==================== */
+
+.controls {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 80px;
+
+    padding:
+        10px 20px
+        calc(10px + env(safe-area-inset-bottom))
+        20px;
+
+    display: flex;
+
     justify-content: center;
     align-items: center;
 
-    min-height: 100vh;
+    gap: 40px;
+
+    z-index: 1000;
+
+    pointer-events: none;
 }
 
-canvas {
-    background: #ffffff;
 
-    border: 2px solid #333;
+.controls button {
+    width: 80px;
+    height: 60px;
 
-    width: 400px;
-    height: 600px;
+    font-size: 30px;
+
+    border: none;
+    border-radius: 15px;
+
+    cursor: pointer;
+
+    background: white;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.15);
+
+    pointer-events: auto;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+    -webkit-tap-highlight-color: transparent;
+
+    touch-action: none;
+}
+
+
+/* Нажатие */
+
+.controls button:active {
+    transform: scale(0.95);
 }
