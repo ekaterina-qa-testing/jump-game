@@ -218,6 +218,7 @@
 
 ## 📁 Структура проекта
 
+```text
 jump-game/
 │
 ├── docs/
@@ -232,3 +233,4 @@ jump-game/
 ├── index.html
 ├── style.css
 └── README.md
+```
