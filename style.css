@@ -1,7 +1,9 @@
 * {
     box-sizing: border-box;
+
     -webkit-tap-highlight-color: transparent;
 }
+
 
 html,
 body {
@@ -34,6 +36,8 @@ body {
    ==================== */
 
 .game-container {
+    position: relative;
+
     width: 100%;
     min-height: 100dvh;
 
@@ -71,7 +75,7 @@ body {
 
 
 /* ====================
-   КНОПКИ
+   КНОПКИ УПРАВЛЕНИЯ
    ==================== */
 
 .controls {
@@ -134,4 +138,59 @@ body {
 
 .controls button:active {
     transform: scale(0.95);
+}
+
+
+/* ====================
+   КНОПКА ИГРАТЬ СНОВА
+   ==================== */
+
+.restart-button {
+    position: absolute;
+
+    left: 50%;
+    top: 350px;
+
+    transform: translateX(-50%);
+
+    width: 200px;
+    height: 60px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 15px;
+
+    background: white;
+    color: #333;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2);
+
+    display: none;
+
+    z-index: 2000;
+
+    cursor: pointer;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
+
+    -webkit-tap-highlight-color: transparent;
+
+    touch-action: manipulation;
+}
+
+
+/* Нажатие кнопки рестарта */
+
+.restart-button:active {
+    transform:
+        translateX(-50%)
+        scale(0.95);
 }
